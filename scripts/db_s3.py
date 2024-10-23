@@ -1,12 +1,11 @@
-import boto3
-import datetime, time
-from datetime import datetime
-import json
-import logging
-import re
 import os
+import re
+import json
+import boto3
 import psycopg2
+import logging
 import pyspark
+from datetime import datetime, time
 from pyspark.sql import SparkSession
 
 # Create a logger
@@ -302,9 +301,8 @@ def main_db_s3(**input_params):
     if result:
       logging.info(f"{result[0]} records transferred from DB to S3 {target_s3} with filename {result[1]}")
   else:
-    ###run_logger('DB-S3','update','read','','','','failed')
     result = None
-    
+
   if not result:
     logging.info("Failed to transfer file from S3 to Target table")
     run_logger(dag_id, run_id, 'DB-S3', task_order ,'update',db_access, source_table,DML,'write',0,s3_access,target_s3,'','failed')

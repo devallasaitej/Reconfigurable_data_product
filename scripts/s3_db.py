@@ -1,12 +1,12 @@
 # Importing required libraries
 import os
+import re
 import json
 import boto3
-import re
-import datetime, time
 import logging
 import psycopg2
 import pyspark
+from datetime import datetime, time
 from pyspark.sql import SparkSession
 
 spark = None

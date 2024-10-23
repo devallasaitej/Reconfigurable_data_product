@@ -1,13 +1,11 @@
-import boto3
-import uuid
-import datetime, time
-from datetime import datetime
-import logging
-import json
 import re
 import os
+import json
+import boto3
+import logging
 import psycopg2
 import pyspark
+from datetime import datetime, time
 from pyspark.sql import SparkSession
 
 spark = None
@@ -129,7 +127,6 @@ def table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table
       .mode(load_type)
       .save()
       )
-      #run_logger('DB-DB','insert','write', query, rc, target_db ,'success')
       query =  query.replace("'", "''")
       logging.info("Completed writing to target table.......")
       run_logger(dag_id, run_id, 'DB-DB', task_order, 'insert' , sdb_access, source_table , query, 'write', rc, tdb_access, target_table, '','success')
@@ -137,12 +134,10 @@ def table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table
     except Exception as e:
       logging.error(f"Unable to write data to table: {e}")
       query = query.replace("'", "''")
-      #run_logger('DB-DB','insert','write', query, 0, target_db ,'failed')
       run_logger(dag_id, run_id, 'DB-DB', task_order, 'insert' , sdb_access, source_table , query, 'write', 0, tdb_access, target_table, '','failed')
       return None
   else:
     query = query.replace("'", "''")
-    #run_logger('DB-DB','insert','read', query, 0, target_db ,'failed')
     run_logger(dag_id, run_id, 'DB-DB', task_order, 'insert' , sdb_access, source_table , query, 'write', 0, tdb_access, target_table, '','failed')
     logging.info("Error during reading from source table ......")
     return None

@@ -1,15 +1,12 @@
-import streamlit as st
-import json
-import psycopg2
-from datetime import datetime
+# Importing required libraries
 import os
 import sys
-import uuid
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
-from airflow.operators.dummy_operator import DummyOperator
+import json
+import psycopg2
+import streamlit as st
+from datetime import datetime
 
-# Add the scripts folder to the system path
+# Add the scripts folder to the system path to import required scripts
 sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
 
 import s3_db

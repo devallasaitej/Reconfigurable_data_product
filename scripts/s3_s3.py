@@ -1,11 +1,10 @@
-import boto3
-import datetime, time
-from datetime import datetime
-import json
-import psycopg2
-import logging
 import re
 import os
+import json
+import boto3
+import psycopg2
+import logging
+from datetime import datetime, time
 
 # Create a logger
 logger = logging.getLogger()
@@ -183,7 +182,6 @@ def s3_s3_copy(ss3_conn, ts3_conn, source_s3_file, target_s3_file, dag_id, run_i
     # Copy the object from source bucket to target bucket
     target_s3.copy_object(Bucket=target_bucket_name, Key=target_object_key, CopySource={'Bucket': source_bucket_name, 'Key': source_object_key})
     tgt = 's3://'+target_bucket_name+'/'+target_object_key
-    #run_logger('S3-S3', 'insert','copy',file_name,1,tgt,'success')
     run_logger(dag_id, run_id, 'S3-S3', task_order, 'insert' ,ss3_access, source_s3_file, '', 'copy', 1, ts3_access, target_s3_file, target_object_key,'success')
     return [True, file_name,1]
     
@@ -195,7 +193,6 @@ def s3_s3_copy(ss3_conn, ts3_conn, source_s3_file, target_s3_file, dag_id, run_i
 
     if source_bucket_name == '':
       logging.error("Invalid source file s3 path")
-      #run_logger('S3-S3','insert','copy','',0,target_s3_file,'failed')
       run_logger(dag_id, run_id, 'S3-S3', task_order, 'insert' ,ss3_access, source_s3_file, '', 'copy', 0, ts3_access, target_s3_file, '','failed')
       return None
 
@@ -208,7 +205,6 @@ def s3_s3_copy(ss3_conn, ts3_conn, source_s3_file, target_s3_file, dag_id, run_i
 
     if target_bucket_name == '':
       logging.error("Invalid target file s3 path")
-      #run_logger('S3-S3','insert','copy','',0,target_s3_file,'failed')
       run_logger(dag_id, run_id, 'S3-S3', task_order, 'insert' ,ss3_access, source_s3_file, '', 'copy', 0, ts3_access, target_s3_file, '','failed')
       return None
 
@@ -232,7 +228,6 @@ def s3_s3_copy(ss3_conn, ts3_conn, source_s3_file, target_s3_file, dag_id, run_i
     # If no files present at given S3 Exit
     if len(obj_list) == 0:
       logging.info("No files at source s3 file path")
-      #run_logger('S3-S3','insert','copy','',0,target_s3_file,'failed')
       run_logger(dag_id, run_id, 'S3-S3', task_order, 'insert' ,ss3_access, source_s3_file, '', 'copy', 0, ts3_access, target_s3_file, '','failed')
       return None
     else:
@@ -246,12 +241,10 @@ def s3_s3_copy(ss3_conn, ts3_conn, source_s3_file, target_s3_file, dag_id, run_i
           target_s3.copy_object(Bucket=target_bucket_name, Key=destination_object_key, CopySource={'Bucket': source_bucket_name, 'Key': source_object_key})
           nobj+=1
         tgt = 's3://'+target_bucket_name+'/'+destination_object_key
-        #run_logger('S3-S3', 'insert','copy','MultipleFiles',nobj,tgt,'success')
-        run_logger(dag_id, run_id, 'S3-S3', task_order, 'insert' ,ss3_access, source_s3_file, '', 'copy', nobj, ts3_access, target_s3_file, 'Multiple files','success')
+        run_logger(dag_id, run_id, 'S3-S3', task_order, 'insert' ,ss3_access, source_s3_file, '', 'copy', nobj, ts3_access, tgt, 'Multiple files','success')
         return [True,nobj]
       except Exception as e:
         logging.error(f"Unable to copy files to target s3:{e}")
-        #run_logger('S3-S3', 'insert','copy','MultipleFiles',0,target_s3_file,'failed')
         run_logger(dag_id, run_id, 'S3-S3', task_order, 'insert' ,ss3_access, source_s3_file, '', 'copy', 0, ts3_access, target_s3_file, '','failed')
         return None
 
@@ -288,7 +281,6 @@ def main_s3_s3(**input_params):
   run_id = extract_widget_values(input_params, 'run_id')
   dag_id = extract_widget_values(input_params, 'dag_id')
   task_order = extract_widget_values(input_params, 'task_order')
-  
 
   result = s3_s3_copy(ss3_conn, ts3_conn, source_s3_file, target_s3_file, dag_id, run_id, task_order,ss3_access,ts3_access)
   if result:
