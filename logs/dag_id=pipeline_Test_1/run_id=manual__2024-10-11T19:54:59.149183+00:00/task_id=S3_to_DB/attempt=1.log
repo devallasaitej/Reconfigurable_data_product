@@ -1,0 +1,35 @@
+[2024-10-11T19:55:01.519+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_Test_1.S3_to_DB manual__2024-10-11T19:54:59.149183+00:00 [queued]>
+[2024-10-11T19:55:01.525+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_Test_1.S3_to_DB manual__2024-10-11T19:54:59.149183+00:00 [queued]>
+[2024-10-11T19:55:01.525+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-11T19:55:01.525+0000] {taskinstance.py:1289} INFO - Starting attempt 1 of 1
+[2024-10-11T19:55:01.525+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-11T19:55:01.531+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): S3_to_DB> on 2024-10-11 19:54:59.149183+00:00
+[2024-10-11T19:55:01.546+0000] {standard_task_runner.py:55} INFO - Started process 55707 to run task
+[2024-10-11T19:55:01.550+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_Test_1', 'S3_to_DB', 'manual__2024-10-11T19:54:59.149183+00:00', '--job-id', '28', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_Test_1.py', '--cfg-path', '/tmp/tmp6t3ta0ol']
+[2024-10-11T19:55:01.550+0000] {standard_task_runner.py:83} INFO - Job 28: Subtask S3_to_DB
+[2024-10-11T19:55:01.563+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-11T19:55:01.588+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_Test_1.S3_to_DB manual__2024-10-11T19:54:59.149183+00:00 [running]> on host 233010463d86
+[2024-10-11T19:55:01.617+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_Test_1
+AIRFLOW_CTX_TASK_ID=S3_to_DB
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-11T19:54:59.149183+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-11T19:54:59.149183+00:00
+[2024-10-11T19:55:01.619+0000] {s3_db.py:129} INFO - Executing S3 File read.......
+[2024-10-11T19:55:01.619+0000] {s3_db.py:16} INFO - Creating Spark session ......
+[2024-10-11T19:55:14.230+0000] {s3_db.py:220} INFO - Completed reading files to df ........
+[2024-10-11T19:55:14.249+0000] {s3_db.py:51} INFO - Updating run log for read operation....
+[2024-10-11T19:55:14.258+0000] {s3_db.py:55} INFO - Run log updated successfully....
+[2024-10-11T19:55:14.271+0000] {s3_db.py:238} INFO - Executing file writing function .....
+[2024-10-11T19:55:14.964+0000] {s3_db.py:263} INFO - Completed writing to target table.......
+[2024-10-11T19:55:14.965+0000] {s3_db.py:317} INFO - Updating run_log, marking status as success........ 
+[2024-10-11T19:55:14.968+0000] {s3_db.py:51} INFO - Updating run log for write operation....
+[2024-10-11T19:55:14.969+0000] {s3_db.py:55} INFO - Run log updated successfully....
+[2024-10-11T19:55:14.969+0000] {s3_db.py:319} INFO - 918 records transferred from s3a://sdevalla-buck/sftp_receiver/ to ***.public.reddit_dclone
+[2024-10-11T19:55:15.197+0000] {python.py:177} INFO - Done. Returned value was: 918
+[2024-10-11T19:55:15.244+0000] {taskinstance.py:1327} INFO - Marking task as SUCCESS. dag_id=pipeline_Test_1, task_id=S3_to_DB, execution_date=20241011T195459, start_date=20241011T195501, end_date=20241011T195515
+[2024-10-11T19:55:15.290+0000] {local_task_job.py:212} INFO - Task exited with return code 0
+[2024-10-11T19:55:15.353+0000] {taskinstance.py:2596} INFO - 1 downstream tasks scheduled from follow-on schedule check

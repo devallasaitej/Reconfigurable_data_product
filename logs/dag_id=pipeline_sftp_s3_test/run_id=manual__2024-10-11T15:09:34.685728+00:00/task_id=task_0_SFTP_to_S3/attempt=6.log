@@ -1,0 +1,36 @@
+[2024-10-11T15:20:34.397+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_sftp_s3_test.task_0_SFTP_to_S3 manual__2024-10-11T15:09:34.685728+00:00 [queued]>
+[2024-10-11T15:20:34.401+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_sftp_s3_test.task_0_SFTP_to_S3 manual__2024-10-11T15:09:34.685728+00:00 [queued]>
+[2024-10-11T15:20:34.402+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-11T15:20:34.403+0000] {taskinstance.py:1289} INFO - Starting attempt 6 of 6
+[2024-10-11T15:20:34.404+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-11T15:20:34.414+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_SFTP_to_S3> on 2024-10-11 15:09:34.685728+00:00
+[2024-10-11T15:20:34.447+0000] {standard_task_runner.py:55} INFO - Started process 43268 to run task
+[2024-10-11T15:20:34.478+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_sftp_s3_test', 'task_0_SFTP_to_S3', 'manual__2024-10-11T15:09:34.685728+00:00', '--job-id', '11', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_sftp_s3_test.py', '--cfg-path', '/tmp/tmptl_emfcu']
+[2024-10-11T15:20:34.527+0000] {standard_task_runner.py:83} INFO - Job 11: Subtask task_0_SFTP_to_S3
+[2024-10-11T15:20:34.774+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-11T15:20:35.063+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_sftp_s3_test.task_0_SFTP_to_S3 manual__2024-10-11T15:09:34.685728+00:00 [running]> on host 9b96fcb811c3
+[2024-10-11T15:20:35.216+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_sftp_s3_test
+AIRFLOW_CTX_TASK_ID=task_0_SFTP_to_S3
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-11T15:09:34.685728+00:00
+AIRFLOW_CTX_TRY_NUMBER=6
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-11T15:09:34.685728+00:00
+[2024-10-11T15:20:35.254+0000] {sftp_s3.py:158} INFO - Entered sftp_get_file function .....
+[2024-10-11T15:20:35.258+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/pysftp/__init__.py:61 UserWarning: Failed to load HostKeys from /root/.ssh/known_hosts.  You will need to explicitly load HostKeys (cnopts.hostkeys.load(filename)) or disableHostKey checking (cnopts.hostkeys = None).
+[2024-10-11T15:20:35.259+0000] {sftp_s3.py:181} INFO - Entered func
+[2024-10-11T15:20:35.259+0000] {sftp_s3.py:46} INFO - Executing File pattern check......
+[2024-10-11T15:20:35.639+0000] {transport.py:1944} INFO - Connected (version 2.0, client OpenSSH_8.4p1)
+[2024-10-11T15:20:36.080+0000] {transport.py:1944} INFO - Authentication (password) successful!
+[2024-10-11T15:20:36.087+0000] {logging_mixin.py:137} INFO - Connection successful to SFTP .........
+[2024-10-11T15:20:36.780+0000] {sftp.py:169} INFO - [chan 0] Opened sftp connection (server version 3)
+[2024-10-11T15:20:36.807+0000] {sftp.py:169} INFO - [chan 0] sftp session closed.
+[2024-10-11T15:20:36.811+0000] {logging_mixin.py:137} INFO - match_list: []
+[2024-10-11T15:20:36.812+0000] {sftp_s3.py:86} INFO - No files found at /sftp_restricted/sftp_yyyymmddHHMMSS.txt with input pattern
+[2024-10-11T15:20:36.812+0000] {sftp_s3.py:186} ERROR - No latest file found
+[2024-10-11T15:20:36.813+0000] {python.py:177} INFO - Done. Returned value was: None
+[2024-10-11T15:20:36.876+0000] {taskinstance.py:1327} INFO - Marking task as SUCCESS. dag_id=pipeline_sftp_s3_test, task_id=task_0_SFTP_to_S3, execution_date=20241011T150934, start_date=20241011T152034, end_date=20241011T152036
+[2024-10-11T15:20:36.905+0000] {local_task_job.py:212} INFO - Task exited with return code 0
+[2024-10-11T15:20:36.957+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

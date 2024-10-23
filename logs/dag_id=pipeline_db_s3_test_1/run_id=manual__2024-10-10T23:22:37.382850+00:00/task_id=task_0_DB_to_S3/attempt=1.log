@@ -1,0 +1,37 @@
+[2024-10-10T23:22:39.958+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_db_s3_test_1.task_0_DB_to_S3 manual__2024-10-10T23:22:37.382850+00:00 [queued]>
+[2024-10-10T23:22:39.963+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_db_s3_test_1.task_0_DB_to_S3 manual__2024-10-10T23:22:37.382850+00:00 [queued]>
+[2024-10-10T23:22:39.963+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T23:22:39.963+0000] {taskinstance.py:1289} INFO - Starting attempt 1 of 1
+[2024-10-10T23:22:39.963+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T23:22:39.970+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_DB_to_S3> on 2024-10-10 23:22:37.382850+00:00
+[2024-10-10T23:22:39.980+0000] {standard_task_runner.py:55} INFO - Started process 44081 to run task
+[2024-10-10T23:22:39.984+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_db_s3_test_1', 'task_0_DB_to_S3', 'manual__2024-10-10T23:22:37.382850+00:00', '--job-id', '28', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_db_s3_test_1.py', '--cfg-path', '/tmp/tmpu8q7chhl']
+[2024-10-10T23:22:39.987+0000] {standard_task_runner.py:83} INFO - Job 28: Subtask task_0_DB_to_S3
+[2024-10-10T23:22:40.009+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-10T23:22:40.071+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_db_s3_test_1.task_0_DB_to_S3 manual__2024-10-10T23:22:37.382850+00:00 [running]> on host d6685a94b59c
+[2024-10-10T23:22:40.111+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_db_s3_test_1
+AIRFLOW_CTX_TASK_ID=task_0_DB_to_S3
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-10T23:22:37.382850+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-10T23:22:37.382850+00:00
+[2024-10-10T23:22:40.114+0000] {db_s3.py:21} INFO - Creating Spark session ......
+[2024-10-10T23:22:46.802+0000] {logging_mixin.py:137} INFO - Executable Query: ( select * from ***.public.reddit_d where flair = 'Blog' ) as query
+[2024-10-10T23:22:50.797+0000] {taskinstance.py:1776} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/db_s3.py", line 296, in main_db_s3
+    inputs = table_data_read(s3_conn, db_conn, source_db, source_table, DML, dag_id, run_id, task_order,db_access,s3_access,target_s3)
+  File "/opt/airflow/scripts/db_s3.py", line 111, in table_data_read
+    run_logger(dag_id, run_id, 'DB-S3', task_order ,'insert',db_access, source_table,DML,'read',rc,s3_access,target_s3,'success')
+TypeError: run_logger() missing 1 required positional argument: 'status'
+[2024-10-10T23:22:51.218+0000] {taskinstance.py:1327} INFO - Marking task as FAILED. dag_id=pipeline_db_s3_test_1, task_id=task_0_DB_to_S3, execution_date=20241010T232237, start_date=20241010T232239, end_date=20241010T232251
+[2024-10-10T23:22:51.308+0000] {standard_task_runner.py:100} ERROR - Failed to execute job 28 for task task_0_DB_to_S3 (run_logger() missing 1 required positional argument: 'status'; 44081)
+[2024-10-10T23:22:51.352+0000] {local_task_job.py:212} INFO - Task exited with return code 1
+[2024-10-10T23:22:51.557+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

@@ -1,0 +1,41 @@
+[2024-10-13T21:42:43.772+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_Test_2.S3_to_DB manual__2024-10-13T21:34:46.056552+00:00 [queued]>
+[2024-10-13T21:42:43.776+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_Test_2.S3_to_DB manual__2024-10-13T21:34:46.056552+00:00 [queued]>
+[2024-10-13T21:42:43.776+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-13T21:42:43.777+0000] {taskinstance.py:1289} INFO - Starting attempt 5 of 5
+[2024-10-13T21:42:43.777+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-13T21:42:43.782+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): S3_to_DB> on 2024-10-13 21:34:46.056552+00:00
+[2024-10-13T21:42:43.790+0000] {standard_task_runner.py:55} INFO - Started process 4664 to run task
+[2024-10-13T21:42:43.792+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_Test_2', 'S3_to_DB', 'manual__2024-10-13T21:34:46.056552+00:00', '--job-id', '23', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_Test_2.py', '--cfg-path', '/tmp/tmp7hjm99io']
+[2024-10-13T21:42:43.793+0000] {standard_task_runner.py:83} INFO - Job 23: Subtask S3_to_DB
+[2024-10-13T21:42:43.801+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-13T21:42:43.826+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_Test_2.S3_to_DB manual__2024-10-13T21:34:46.056552+00:00 [running]> on host 764f93acab86
+[2024-10-13T21:42:43.862+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_Test_2
+AIRFLOW_CTX_TASK_ID=S3_to_DB
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-13T21:34:46.056552+00:00
+AIRFLOW_CTX_TRY_NUMBER=5
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-13T21:34:46.056552+00:00
+[2024-10-13T21:42:43.863+0000] {s3_db.py:129} INFO - Executing S3 File read.......
+[2024-10-13T21:42:43.863+0000] {s3_db.py:16} INFO - Creating Spark session ......
+[2024-10-13T21:42:46.349+0000] {s3_db.py:71} INFO - Executing File pattern check......
+[2024-10-13T21:42:46.349+0000] {logging_mixin.py:137} INFO - prefix: sftp_file_receiver
+[2024-10-13T21:42:46.704+0000] {s3_db.py:111} INFO - No files found at s3a://sdevalla-buck/sftp_file_receiver/sftp_s3_yyyymmdd.csv for input file pattern
+[2024-10-13T21:42:46.706+0000] {s3_db.py:170} ERROR - No latest file found
+[2024-10-13T21:42:46.717+0000] {s3_db.py:51} INFO - Updating run log for read operation....
+[2024-10-13T21:42:46.719+0000] {s3_db.py:55} INFO - Run log updated successfully....
+[2024-10-13T21:42:46.720+0000] {taskinstance.py:1776} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/s3_db.py", line 314, in main_s3_db
+    run_logger(dag_id, run_id ,'S3-DB',task_order,'insert',s3_access ,source_s3_path , f'{inputs[1]}' , 'write', f'{result}',db_access, target_table, '','success')
+TypeError: 'NoneType' object is not subscriptable
+[2024-10-13T21:42:46.730+0000] {taskinstance.py:1327} INFO - Marking task as FAILED. dag_id=pipeline_Test_2, task_id=S3_to_DB, execution_date=20241013T213446, start_date=20241013T214243, end_date=20241013T214246
+[2024-10-13T21:42:46.739+0000] {standard_task_runner.py:100} ERROR - Failed to execute job 23 for task S3_to_DB ('NoneType' object is not subscriptable; 4664)
+[2024-10-13T21:42:46.784+0000] {local_task_job.py:212} INFO - Task exited with return code 1
+[2024-10-13T21:42:46.894+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

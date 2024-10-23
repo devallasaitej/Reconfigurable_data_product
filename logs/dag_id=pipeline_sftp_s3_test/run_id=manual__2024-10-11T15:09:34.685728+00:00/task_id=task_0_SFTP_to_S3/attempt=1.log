@@ -1,0 +1,47 @@
+[2024-10-11T15:09:37.701+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_sftp_s3_test.task_0_SFTP_to_S3 manual__2024-10-11T15:09:34.685728+00:00 [queued]>
+[2024-10-11T15:09:37.708+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_sftp_s3_test.task_0_SFTP_to_S3 manual__2024-10-11T15:09:34.685728+00:00 [queued]>
+[2024-10-11T15:09:37.708+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-11T15:09:37.708+0000] {taskinstance.py:1289} INFO - Starting attempt 1 of 1
+[2024-10-11T15:09:37.708+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-11T15:09:37.718+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_SFTP_to_S3> on 2024-10-11 15:09:34.685728+00:00
+[2024-10-11T15:09:37.726+0000] {standard_task_runner.py:55} INFO - Started process 37957 to run task
+[2024-10-11T15:09:37.729+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_sftp_s3_test', 'task_0_SFTP_to_S3', 'manual__2024-10-11T15:09:34.685728+00:00', '--job-id', '6', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_sftp_s3_test.py', '--cfg-path', '/tmp/tmp12dbebvn']
+[2024-10-11T15:09:37.729+0000] {standard_task_runner.py:83} INFO - Job 6: Subtask task_0_SFTP_to_S3
+[2024-10-11T15:09:37.745+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-11T15:09:37.782+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_sftp_s3_test.task_0_SFTP_to_S3 manual__2024-10-11T15:09:34.685728+00:00 [running]> on host 9b96fcb811c3
+[2024-10-11T15:09:37.821+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_sftp_s3_test
+AIRFLOW_CTX_TASK_ID=task_0_SFTP_to_S3
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-11T15:09:34.685728+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-11T15:09:34.685728+00:00
+[2024-10-11T15:09:37.825+0000] {sftp_s3.py:158} INFO - Entered sftp_get_file function .....
+[2024-10-11T15:09:37.827+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/pysftp/__init__.py:61 UserWarning: Failed to load HostKeys from /root/.ssh/known_hosts.  You will need to explicitly load HostKeys (cnopts.hostkeys.load(filename)) or disableHostKey checking (cnopts.hostkeys = None).
+[2024-10-11T15:09:37.827+0000] {sftp_s3.py:181} INFO - Entered func
+[2024-10-11T15:09:37.827+0000] {sftp_s3.py:46} INFO - Executing File pattern check......
+[2024-10-11T15:09:37.835+0000] {taskinstance.py:1776} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/sftp_s3.py", line 305, in main_sftp_s3
+    local_path = sftp_get_file(sftp_conn, source_sftp_path )
+  File "/opt/airflow/scripts/sftp_s3.py", line 182, in sftp_get_file
+    latest_file = sftp_file_pattern_check(sftp_conn, source_sftp_path)
+  File "/opt/airflow/scripts/sftp_s3.py", line 64, in sftp_file_pattern_check
+    with pysftp.Connection(host=hostname, username=username, password=password, port=2222, cnopts=cnopts) as sftp:
+  File "/usr/local/lib/python3.9/site-packages/pysftp/__init__.py", line 140, in __init__
+    self._start_transport(host, port)
+  File "/usr/local/lib/python3.9/site-packages/pysftp/__init__.py", line 176, in _start_transport
+    self._transport = paramiko.Transport((host, port))
+  File "/usr/local/lib/python3.9/site-packages/paramiko/transport.py", line 499, in __init__
+    raise SSHException(
+paramiko.ssh_exception.SSHException: Unable to connect to localhost: [Errno 111] Connection refused
+[2024-10-11T15:09:37.847+0000] {taskinstance.py:1327} INFO - Marking task as FAILED. dag_id=pipeline_sftp_s3_test, task_id=task_0_SFTP_to_S3, execution_date=20241011T150934, start_date=20241011T150937, end_date=20241011T150937
+[2024-10-11T15:09:37.855+0000] {standard_task_runner.py:100} ERROR - Failed to execute job 6 for task task_0_SFTP_to_S3 (Unable to connect to localhost: [Errno 111] Connection refused; 37957)
+[2024-10-11T15:09:37.876+0000] {local_task_job.py:212} INFO - Task exited with return code 1
+[2024-10-11T15:09:37.886+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

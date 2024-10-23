@@ -1,0 +1,49 @@
+[2024-10-10T21:56:09.542+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_s3_db_test_1.task_0_S3_to_DB manual__2024-10-10T21:52:29.218175+00:00 [queued]>
+[2024-10-10T21:56:09.548+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_s3_db_test_1.task_0_S3_to_DB manual__2024-10-10T21:52:29.218175+00:00 [queued]>
+[2024-10-10T21:56:09.548+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T21:56:09.550+0000] {taskinstance.py:1289} INFO - Starting attempt 2 of 2
+[2024-10-10T21:56:09.550+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T21:56:09.557+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_S3_to_DB> on 2024-10-10 21:52:29.218175+00:00
+[2024-10-10T21:56:09.560+0000] {standard_task_runner.py:55} INFO - Started process 6731 to run task
+[2024-10-10T21:56:09.563+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_s3_db_test_1', 'task_0_S3_to_DB', 'manual__2024-10-10T21:52:29.218175+00:00', '--job-id', '24', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_s3_db_test_1.py', '--cfg-path', '/tmp/tmppc8p_upy']
+[2024-10-10T21:56:09.565+0000] {standard_task_runner.py:83} INFO - Job 24: Subtask task_0_S3_to_DB
+[2024-10-10T21:56:09.574+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-10T21:56:09.606+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_s3_db_test_1.task_0_S3_to_DB manual__2024-10-10T21:52:29.218175+00:00 [running]> on host d6685a94b59c
+[2024-10-10T21:56:09.650+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_s3_db_test_1
+AIRFLOW_CTX_TASK_ID=task_0_S3_to_DB
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-10T21:52:29.218175+00:00
+AIRFLOW_CTX_TRY_NUMBER=2
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-10T21:52:29.218175+00:00
+[2024-10-10T21:56:09.653+0000] {s3_db.py:132} INFO - Executing S3 File read.......
+[2024-10-10T21:56:09.653+0000] {s3_db.py:17} INFO - Creating Spark session ......
+[2024-10-10T21:56:17.077+0000] {s3_db.py:72} INFO - Executing File pattern check......
+[2024-10-10T21:56:17.083+0000] {logging_mixin.py:137} INFO - prefix: test
+[2024-10-10T21:56:17.717+0000] {logging_mixin.py:137} INFO - obj_list: {'ResponseMetadata': {'RequestId': 'BQBKZCC9T9KP56DN', 'HostId': 'r+EgpfWOkarlZ1dybrO0ljOE5iimgyF3J+XrJmR7s2MEtlidOocTQQrW+82+prhpC4hTAd0CL8s=', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amz-id-2': 'r+EgpfWOkarlZ1dybrO0ljOE5iimgyF3J+XrJmR7s2MEtlidOocTQQrW+82+prhpC4hTAd0CL8s=', 'x-amz-request-id': 'BQBKZCC9T9KP56DN', 'date': 'Thu, 10 Oct 2024 21:56:18 GMT', 'x-amz-bucket-region': 'us-east-2', 'content-type': 'application/xml', 'transfer-encoding': 'chunked', 'server': 'AmazonS3'}, 'RetryAttempts': 1}, 'IsTruncated': False, 'Marker': '', 'Contents': [{'Key': 'test/s3_s3_20241010152839.txt', 'LastModified': datetime.datetime(2024, 10, 10, 15, 28, 41, tzinfo=tzlocal()), 'ETag': '"63d3bd55663826e036c329762f1a596f"', 'Size': 59595, 'StorageClass': 'STANDARD', 'Owner': {'ID': '2d6d33b53dc3068c5584827cae6a664857510b8838ffb6beb4f378425d4cd31f'}}, {'Key': 'test/sftp_20240323.txt', 'LastModified': datetime.datetime(2024, 3, 23, 16, 27, 38, tzinfo=tzlocal()), 'ETag': '"2478cd5ab1c8f25e2c6bf91c49b36f05"', 'Size': 29829, 'StorageClass': 'STANDARD', 'Owner': {'ID': '2d6d33b53dc3068c5584827cae6a664857510b8838ffb6beb4f378425d4cd31f'}}, {'Key': 'test/sftp_20241010.txt', 'LastModified': datetime.datetime(2024, 10, 10, 21, 43, 56, tzinfo=tzlocal()), 'ETag': '"2478cd5ab1c8f25e2c6bf91c49b36f05"', 'Size': 29829, 'StorageClass': 'STANDARD', 'Owner': {'ID': '2d6d33b53dc3068c5584827cae6a664857510b8838ffb6beb4f378425d4cd31f'}}, {'Key': 'test/target/reddit_target_20241010.csv', 'LastModified': datetime.datetime(2024, 10, 10, 13, 25, 14, tzinfo=tzlocal()), 'ETag': '"63d3bd55663826e036c329762f1a596f"', 'Size': 59595, 'StorageClass': 'STANDARD', 'Owner': {'ID': '2d6d33b53dc3068c5584827cae6a664857510b8838ffb6beb4f378425d4cd31f'}}, {'Key': 'test/target/sftp_20241011.txt', 'LastModified': datetime.datetime(2024, 10, 10, 21, 44, 36, tzinfo=tzlocal()), 'ETag': '"2478cd5ab1c8f25e2c6bf91c49b36f05"', 'Size': 29829, 'StorageClass': 'STANDARD', 'Owner': {'ID': '2d6d33b53dc3068c5584827cae6a664857510b8838ffb6beb4f378425d4cd31f'}}], 'Name': 'sdevalla-buck', 'Prefix': 'test', 'MaxKeys': 1000, 'EncodingType': 'url'}
+[2024-10-10T21:56:17.718+0000] {logging_mixin.py:137} INFO - objs: ['test/s3_s3_20241010152839.txt', 'test/sftp_20240323.txt', 'test/sftp_20241010.txt', 'test/target/reddit_target_20241010.csv', 'test/target/sftp_20241011.txt']
+[2024-10-10T21:56:17.718+0000] {logging_mixin.py:137} INFO - obj_req: ['s3_s3_20241010152839.txt', 'sftp_20240323.txt', 'sftp_20241010.txt', 'reddit_target_20241010.csv', 'sftp_20241011.txt']
+[2024-10-10T21:56:17.718+0000] {s3_db.py:119} INFO - Latest file for pattern - sftp_\d{8}\.txt at s3a://sdevalla-buck/test: sftp_20241011.txt
+[2024-10-10T21:56:20.585+0000] {taskinstance.py:1776} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/s3_db.py", line 309, in main_s3_db
+    inputs = s3_file_read(s3_conn, source_s3_path, header, delimiter, s3_access, db_access,target_table, run_id, dag_id)
+  File "/opt/airflow/scripts/s3_db.py", line 171, in s3_file_read
+    df = spark.read.option("inferSchema", "true").option("header", header).option("delimiter",delimiter).csv(file_path)
+  File "/usr/local/lib/python3.9/site-packages/pyspark/sql/readwriter.py", line 727, in csv
+    return self._df(self._jreader.csv(self._spark._sc._jvm.PythonUtils.toSeq(path)))
+  File "/usr/local/lib/python3.9/site-packages/py4j/java_gateway.py", line 1322, in __call__
+    return_value = get_return_value(
+  File "/usr/local/lib/python3.9/site-packages/pyspark/errors/exceptions/captured.py", line 175, in deco
+    raise converted from None
+pyspark.errors.exceptions.captured.AnalysisException: [PATH_NOT_FOUND] Path does not exist: s3a://sdevalla-buck/test/sftp_20241011.txt.
+[2024-10-10T21:56:20.811+0000] {taskinstance.py:1327} INFO - Marking task as FAILED. dag_id=pipeline_s3_db_test_1, task_id=task_0_S3_to_DB, execution_date=20241010T215229, start_date=20241010T215609, end_date=20241010T215620
+[2024-10-10T21:56:20.891+0000] {standard_task_runner.py:100} ERROR - Failed to execute job 24 for task task_0_S3_to_DB ([PATH_NOT_FOUND] Path does not exist: s3a://sdevalla-buck/test/sftp_20241011.txt.; 6731)
+[2024-10-10T21:56:20.935+0000] {local_task_job.py:212} INFO - Task exited with return code 1
+[2024-10-10T21:56:21.073+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

@@ -1,0 +1,56 @@
+[2024-10-10T15:21:05.132+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_C.task_0_S3_to_S3 manual__2024-10-10T14:55:53.958876+00:00 [queued]>
+[2024-10-10T15:21:05.136+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_C.task_0_S3_to_S3 manual__2024-10-10T14:55:53.958876+00:00 [queued]>
+[2024-10-10T15:21:05.136+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T15:21:05.136+0000] {taskinstance.py:1289} INFO - Starting attempt 7 of 7
+[2024-10-10T15:21:05.136+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T15:21:05.141+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_S3_to_S3> on 2024-10-10 14:55:53.958876+00:00
+[2024-10-10T15:21:05.147+0000] {standard_task_runner.py:55} INFO - Started process 18945 to run task
+[2024-10-10T15:21:05.151+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_C', 'task_0_S3_to_S3', 'manual__2024-10-10T14:55:53.958876+00:00', '--job-id', '12', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_C.py', '--cfg-path', '/tmp/tmpyyyesxkm']
+[2024-10-10T15:21:05.152+0000] {standard_task_runner.py:83} INFO - Job 12: Subtask task_0_S3_to_S3
+[2024-10-10T15:21:05.173+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-10T15:21:05.208+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_C.task_0_S3_to_S3 manual__2024-10-10T14:55:53.958876+00:00 [running]> on host 1f7125be5d21
+[2024-10-10T15:21:05.245+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_C
+AIRFLOW_CTX_TASK_ID=task_0_S3_to_S3
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-10T14:55:53.958876+00:00
+AIRFLOW_CTX_TRY_NUMBER=7
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-10T14:55:53.958876+00:00
+[2024-10-10T15:21:05.318+0000] {s3_s3.py:42} INFO - Executing File pattern check......
+[2024-10-10T15:21:05.318+0000] {logging_mixin.py:137} INFO - source_s3_path : s3://sdevalla-buck/test/target/reddit_target_yyyymmdd.csv
+[2024-10-10T15:21:05.318+0000] {logging_mixin.py:137} INFO - bn: sdevalla-buck
+[2024-10-10T15:21:05.318+0000] {logging_mixin.py:137} INFO - prefix: test/target
+[2024-10-10T15:21:05.829+0000] {logging_mixin.py:137} INFO - obj list: {'ResponseMetadata': {'RequestId': 'KXGS8E74WDDB661R', 'HostId': 'RbShO+b6hGDFsOnOV2Oc+6mJPC80hL4SOVgDEvBonzKkZF9SxD1xuwiZFf8yFAY8GN1BhpzaDAY=', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amz-id-2': 'RbShO+b6hGDFsOnOV2Oc+6mJPC80hL4SOVgDEvBonzKkZF9SxD1xuwiZFf8yFAY8GN1BhpzaDAY=', 'x-amz-request-id': 'KXGS8E74WDDB661R', 'date': 'Thu, 10 Oct 2024 15:21:06 GMT', 'x-amz-bucket-region': 'us-east-2', 'content-type': 'application/xml', 'transfer-encoding': 'chunked', 'server': 'AmazonS3'}, 'RetryAttempts': 1}, 'IsTruncated': False, 'Marker': '', 'Contents': [{'Key': 'test/target/reddit_target_20241010.csv', 'LastModified': datetime.datetime(2024, 10, 10, 13, 25, 14, tzinfo=tzlocal()), 'ETag': '"63d3bd55663826e036c329762f1a596f"', 'Size': 59595, 'StorageClass': 'STANDARD', 'Owner': {'ID': '2d6d33b53dc3068c5584827cae6a664857510b8838ffb6beb4f378425d4cd31f'}}], 'Name': 'sdevalla-buck', 'Prefix': 'test/target', 'MaxKeys': 1000, 'EncodingType': 'url'}
+[2024-10-10T15:21:05.830+0000] {logging_mixin.py:137} INFO - objs list:  ['test/target/reddit_target_20241010.csv']
+[2024-10-10T15:21:05.830+0000] {logging_mixin.py:137} INFO - obj req: ['reddit_target_20241010.csv']
+[2024-10-10T15:21:05.830+0000] {logging_mixin.py:137} INFO - entered
+[2024-10-10T15:21:05.830+0000] {logging_mixin.py:137} INFO - match list:  ['reddit_target_20241010.csv']
+[2024-10-10T15:21:05.831+0000] {taskinstance.py:1776} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/s3_s3.py", line 285, in main_s3_s3
+    result = s3_s3_copy(ss3_conn, ts3_conn, source_s3_file, target_s3_file)
+  File "/opt/airflow/scripts/s3_s3.py", line 149, in s3_s3_copy
+    latest_file = file_pattern_check(source_s3_file,ss3_conn)
+  File "/opt/airflow/scripts/s3_s3.py", line 98, in file_pattern_check
+    latest_file = max(match_list)
+  File "/usr/local/lib/python3.9/site-packages/pyspark/sql/utils.py", line 160, in wrapped
+    return f(*args, **kwargs)
+  File "/usr/local/lib/python3.9/site-packages/pyspark/sql/functions.py", line 452, in max
+    return _invoke_function_over_columns("max", col)
+  File "/usr/local/lib/python3.9/site-packages/pyspark/sql/functions.py", line 103, in _invoke_function_over_columns
+    return _invoke_function(name, *(_to_java_column(col) for col in cols))
+  File "/usr/local/lib/python3.9/site-packages/pyspark/sql/functions.py", line 103, in <genexpr>
+    return _invoke_function(name, *(_to_java_column(col) for col in cols))
+  File "/usr/local/lib/python3.9/site-packages/pyspark/sql/column.py", line 65, in _to_java_column
+    raise TypeError(
+TypeError: Invalid argument, not a string or column: ['reddit_target_20241010.csv'] of type <class 'list'>. For column literals, use 'lit', 'array', 'struct' or 'create_map' function.
+[2024-10-10T15:21:05.845+0000] {taskinstance.py:1327} INFO - Marking task as FAILED. dag_id=pipeline_C, task_id=task_0_S3_to_S3, execution_date=20241010T145553, start_date=20241010T152105, end_date=20241010T152105
+[2024-10-10T15:21:05.853+0000] {standard_task_runner.py:100} ERROR - Failed to execute job 12 for task task_0_S3_to_S3 (Invalid argument, not a string or column: ['reddit_target_20241010.csv'] of type <class 'list'>. For column literals, use 'lit', 'array', 'struct' or 'create_map' function.; 18945)
+[2024-10-10T15:21:05.883+0000] {local_task_job.py:212} INFO - Task exited with return code 1
+[2024-10-10T15:21:05.897+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

@@ -1,0 +1,106 @@
+[2024-10-10T00:42:15.590+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_A.task_0_S3_to_DB manual__2024-10-10T00:42:11.603980+00:00 [queued]>
+[2024-10-10T00:42:15.598+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_A.task_0_S3_to_DB manual__2024-10-10T00:42:11.603980+00:00 [queued]>
+[2024-10-10T00:42:15.599+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T00:42:15.601+0000] {taskinstance.py:1289} INFO - Starting attempt 1 of 1
+[2024-10-10T00:42:15.602+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T00:42:15.615+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_S3_to_DB> on 2024-10-10 00:42:11.603980+00:00
+[2024-10-10T00:42:15.621+0000] {standard_task_runner.py:55} INFO - Started process 20131 to run task
+[2024-10-10T00:42:15.623+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_A', 'task_0_S3_to_DB', 'manual__2024-10-10T00:42:11.603980+00:00', '--job-id', '13', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_A.py', '--cfg-path', '/tmp/tmp5b502aci']
+[2024-10-10T00:42:15.626+0000] {standard_task_runner.py:83} INFO - Job 13: Subtask task_0_S3_to_DB
+[2024-10-10T00:42:15.655+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-10T00:42:15.705+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_A.task_0_S3_to_DB manual__2024-10-10T00:42:11.603980+00:00 [running]> on host d7e677fa2cf4
+[2024-10-10T00:42:15.737+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_EMAIL=
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_A
+AIRFLOW_CTX_TASK_ID=task_0_S3_to_DB
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-10T00:42:11.603980+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-10T00:42:11.603980+00:00
+[2024-10-10T00:42:15.745+0000] {taskinstance.py:1776} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/s3_db.py", line 269, in main_s3_db
+    db_conn['db_username'] = secret_vals[db_access]['username']
+KeyError: 'username'
+[2024-10-10T00:42:15.751+0000] {taskinstance.py:1327} INFO - Marking task as FAILED. dag_id=pipeline_A, task_id=task_0_S3_to_DB, execution_date=20241010T004211, start_date=20241010T004215, end_date=20241010T004215
+[2024-10-10T00:42:15.768+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/utils/email.py:152 RemovedInAirflow3Warning: Fetching SMTP credentials from configuration variables will be deprecated in a future release. Please set credentials using a connection instead.
+[2024-10-10T00:42:15.768+0000] {configuration.py:664} WARNING - section/key [smtp/smtp_user] not found in config
+[2024-10-10T00:42:15.768+0000] {email.py:268} INFO - Email alerting: attempt 1
+[2024-10-10T00:42:15.774+0000] {configuration.py:664} WARNING - section/key [smtp/smtp_user] not found in config
+[2024-10-10T00:42:15.774+0000] {email.py:268} INFO - Email alerting: attempt 1
+[2024-10-10T00:42:15.774+0000] {taskinstance.py:1839} ERROR - Failed to send email to: ['']
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/models/taskinstance.py", line 1383, in _run_raw_task
+    self._execute_task_with_callbacks(context, test_mode)
+  File "/usr/local/lib/python3.9/site-packages/airflow/models/taskinstance.py", line 1529, in _execute_task_with_callbacks
+    result = self._execute_task(context, task_orig)
+  File "/usr/local/lib/python3.9/site-packages/airflow/models/taskinstance.py", line 1589, in _execute_task
+    result = execute_callable(context=context)
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/s3_db.py", line 269, in main_s3_db
+    db_conn['db_username'] = secret_vals[db_access]['username']
+KeyError: 'username'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/models/taskinstance.py", line 2239, in email_alert
+    send_email(task.email, subject, html_content)
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 78, in send_email
+    return backend(
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 152, in send_email_smtp
+    send_mime_email(e_from=mail_from, e_to=recipients, mime_msg=msg, conn_id=conn_id, dryrun=dryrun)
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 270, in send_mime_email
+    smtp_conn = _get_smtp_connection(smtp_host, smtp_port, smtp_timeout, smtp_ssl)
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 317, in _get_smtp_connection
+    else smtplib.SMTP(host=host, port=port, timeout=timeout)
+  File "/usr/local/lib/python3.9/smtplib.py", line 255, in __init__
+    (code, msg) = self.connect(host, port)
+  File "/usr/local/lib/python3.9/smtplib.py", line 341, in connect
+    self.sock = self._get_socket(host, port, self.timeout)
+  File "/usr/local/lib/python3.9/smtplib.py", line 312, in _get_socket
+    return socket.create_connection((host, port), timeout,
+  File "/usr/local/lib/python3.9/socket.py", line 856, in create_connection
+    raise err
+  File "/usr/local/lib/python3.9/socket.py", line 844, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/models/taskinstance.py", line 1837, in handle_failure
+    self.email_alert(error, task)
+  File "/usr/local/lib/python3.9/site-packages/airflow/models/taskinstance.py", line 2241, in email_alert
+    send_email(task.email, subject, html_content_err)
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 78, in send_email
+    return backend(
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 152, in send_email_smtp
+    send_mime_email(e_from=mail_from, e_to=recipients, mime_msg=msg, conn_id=conn_id, dryrun=dryrun)
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 270, in send_mime_email
+    smtp_conn = _get_smtp_connection(smtp_host, smtp_port, smtp_timeout, smtp_ssl)
+  File "/usr/local/lib/python3.9/site-packages/airflow/utils/email.py", line 317, in _get_smtp_connection
+    else smtplib.SMTP(host=host, port=port, timeout=timeout)
+  File "/usr/local/lib/python3.9/smtplib.py", line 255, in __init__
+    (code, msg) = self.connect(host, port)
+  File "/usr/local/lib/python3.9/smtplib.py", line 341, in connect
+    self.sock = self._get_socket(host, port, self.timeout)
+  File "/usr/local/lib/python3.9/smtplib.py", line 312, in _get_socket
+    return socket.create_connection((host, port), timeout,
+  File "/usr/local/lib/python3.9/socket.py", line 856, in create_connection
+    raise err
+  File "/usr/local/lib/python3.9/socket.py", line 844, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+[2024-10-10T00:42:15.782+0000] {standard_task_runner.py:100} ERROR - Failed to execute job 13 for task task_0_S3_to_DB ('username'; 20131)
+[2024-10-10T00:42:15.807+0000] {local_task_job.py:212} INFO - Task exited with return code 1
+[2024-10-10T00:42:15.817+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

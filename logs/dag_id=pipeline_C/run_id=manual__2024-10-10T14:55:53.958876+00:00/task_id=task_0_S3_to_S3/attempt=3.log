@@ -1,0 +1,31 @@
+[2024-10-10T15:00:04.891+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_C.task_0_S3_to_S3 manual__2024-10-10T14:55:53.958876+00:00 [queued]>
+[2024-10-10T15:00:04.898+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_C.task_0_S3_to_S3 manual__2024-10-10T14:55:53.958876+00:00 [queued]>
+[2024-10-10T15:00:04.898+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T15:00:04.899+0000] {taskinstance.py:1289} INFO - Starting attempt 3 of 3
+[2024-10-10T15:00:04.899+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T15:00:04.907+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_S3_to_S3> on 2024-10-10 14:55:53.958876+00:00
+[2024-10-10T15:00:04.923+0000] {standard_task_runner.py:55} INFO - Started process 9687 to run task
+[2024-10-10T15:00:04.926+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_C', 'task_0_S3_to_S3', 'manual__2024-10-10T14:55:53.958876+00:00', '--job-id', '8', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_C.py', '--cfg-path', '/tmp/tmpk3jinwg5']
+[2024-10-10T15:00:04.928+0000] {standard_task_runner.py:83} INFO - Job 8: Subtask task_0_S3_to_S3
+[2024-10-10T15:00:04.942+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-10T15:00:04.981+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_C.task_0_S3_to_S3 manual__2024-10-10T14:55:53.958876+00:00 [running]> on host 1f7125be5d21
+[2024-10-10T15:00:05.014+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_C
+AIRFLOW_CTX_TASK_ID=task_0_S3_to_S3
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-10T14:55:53.958876+00:00
+AIRFLOW_CTX_TRY_NUMBER=3
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-10T14:55:53.958876+00:00
+[2024-10-10T15:00:05.098+0000] {s3_s3.py:42} INFO - Executing File pattern check......
+[2024-10-10T15:00:05.672+0000] {logging_mixin.py:137} INFO - objs list:  ['test/target/reddit_target_20241010.csv']
+[2024-10-10T15:00:05.673+0000] {logging_mixin.py:137} INFO - obj req: []
+[2024-10-10T15:00:05.673+0000] {logging_mixin.py:137} INFO - match list:  []
+[2024-10-10T15:00:05.673+0000] {s3_s3.py:85} INFO - No files found at s3://sdevalla-buck/test/target/reddit_target_yyyymmdd.csv with input pattern
+[2024-10-10T15:00:05.677+0000] {s3_s3.py:148} ERROR - Unable to get file of provided pattern!
+[2024-10-10T15:00:05.678+0000] {s3_s3.py:286} INFO - File Transfer Failed!
+[2024-10-10T15:00:05.678+0000] {python.py:177} INFO - Done. Returned value was: None
+[2024-10-10T15:00:05.692+0000] {taskinstance.py:1327} INFO - Marking task as SUCCESS. dag_id=pipeline_C, task_id=task_0_S3_to_S3, execution_date=20241010T145553, start_date=20241010T150004, end_date=20241010T150005
+[2024-10-10T15:00:05.710+0000] {local_task_job.py:212} INFO - Task exited with return code 0
+[2024-10-10T15:00:05.724+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

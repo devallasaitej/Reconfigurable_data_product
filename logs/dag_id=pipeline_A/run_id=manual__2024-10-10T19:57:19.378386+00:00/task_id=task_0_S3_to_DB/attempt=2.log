@@ -1,0 +1,49 @@
+[2024-10-10T19:59:10.635+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_A.task_0_S3_to_DB manual__2024-10-10T19:57:19.378386+00:00 [queued]>
+[2024-10-10T19:59:10.647+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_A.task_0_S3_to_DB manual__2024-10-10T19:57:19.378386+00:00 [queued]>
+[2024-10-10T19:59:10.647+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T19:59:10.647+0000] {taskinstance.py:1289} INFO - Starting attempt 2 of 2
+[2024-10-10T19:59:10.647+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-10T19:59:10.653+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): task_0_S3_to_DB> on 2024-10-10 19:57:19.378386+00:00
+[2024-10-10T19:59:10.658+0000] {standard_task_runner.py:55} INFO - Started process 50944 to run task
+[2024-10-10T19:59:10.661+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_A', 'task_0_S3_to_DB', 'manual__2024-10-10T19:57:19.378386+00:00', '--job-id', '11', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_A.py', '--cfg-path', '/tmp/tmp_lviv0p3']
+[2024-10-10T19:59:10.664+0000] {standard_task_runner.py:83} INFO - Job 11: Subtask task_0_S3_to_DB
+[2024-10-10T19:59:10.673+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-10T19:59:10.707+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_A.task_0_S3_to_DB manual__2024-10-10T19:57:19.378386+00:00 [running]> on host d6685a94b59c
+[2024-10-10T19:59:10.742+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_A
+AIRFLOW_CTX_TASK_ID=task_0_S3_to_DB
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-10T19:57:19.378386+00:00
+AIRFLOW_CTX_TRY_NUMBER=2
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-10T19:57:19.378386+00:00
+[2024-10-10T19:59:10.745+0000] {taskinstance.py:1776} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/opt/airflow/scripts/run_logger.py", line 14, in run_logger
+    conn = psycopg2.connect(dbname="airflow" , user= "airflow", password= "airflow", host= "postgres", port= 5432)
+NameError: name 'psycopg2' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/airflow/scripts/run_logger.py", line 29, in run_logger
+    except (Exception, psycopg2.DatabaseError) as error:
+NameError: name 'psycopg2' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/usr/local/lib/python3.9/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/scripts/s3_db.py", line 275, in main_s3_db
+    run_logger('S3-DB', 'insert', s3_access, source_s3_path, '','','',db_access, target_table, 'started' )
+  File "/opt/airflow/scripts/run_logger.py", line 32, in run_logger
+    if conn:
+UnboundLocalError: local variable 'conn' referenced before assignment
+[2024-10-10T19:59:10.750+0000] {taskinstance.py:1327} INFO - Marking task as FAILED. dag_id=pipeline_A, task_id=task_0_S3_to_DB, execution_date=20241010T195719, start_date=20241010T195910, end_date=20241010T195910
+[2024-10-10T19:59:10.754+0000] {standard_task_runner.py:100} ERROR - Failed to execute job 11 for task task_0_S3_to_DB (local variable 'conn' referenced before assignment; 50944)
+[2024-10-10T19:59:10.757+0000] {local_task_job.py:212} INFO - Task exited with return code 1
+[2024-10-10T19:59:10.767+0000] {taskinstance.py:2596} INFO - 0 downstream tasks scheduled from follow-on schedule check

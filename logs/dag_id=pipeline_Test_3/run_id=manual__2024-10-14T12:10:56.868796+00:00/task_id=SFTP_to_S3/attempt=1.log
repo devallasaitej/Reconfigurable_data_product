@@ -1,0 +1,63 @@
+[2024-10-14T12:10:58.664+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: pipeline_Test_3.SFTP_to_S3 manual__2024-10-14T12:10:56.868796+00:00 [queued]>
+[2024-10-14T12:10:58.668+0000] {taskinstance.py:1090} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: pipeline_Test_3.SFTP_to_S3 manual__2024-10-14T12:10:56.868796+00:00 [queued]>
+[2024-10-14T12:10:58.668+0000] {taskinstance.py:1288} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-14T12:10:58.668+0000] {taskinstance.py:1289} INFO - Starting attempt 1 of 1
+[2024-10-14T12:10:58.668+0000] {taskinstance.py:1290} INFO - 
+--------------------------------------------------------------------------------
+[2024-10-14T12:10:58.673+0000] {taskinstance.py:1309} INFO - Executing <Task(PythonOperator): SFTP_to_S3> on 2024-10-14 12:10:56.868796+00:00
+[2024-10-14T12:10:58.682+0000] {standard_task_runner.py:55} INFO - Started process 1596 to run task
+[2024-10-14T12:10:58.687+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'pipeline_Test_3', 'SFTP_to_S3', 'manual__2024-10-14T12:10:56.868796+00:00', '--job-id', '9', '--raw', '--subdir', 'DAGS_FOLDER/pipeline_Test_3.py', '--cfg-path', '/tmp/tmp1vqul58z']
+[2024-10-14T12:10:58.688+0000] {standard_task_runner.py:83} INFO - Job 9: Subtask SFTP_to_S3
+[2024-10-14T12:10:58.697+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/***/settings.py:250 DeprecationWarning: The sql_alchemy_conn option in [core] has been moved to the sql_alchemy_conn option in [database] - the old setting has been used, but please update your config.
+[2024-10-14T12:10:58.720+0000] {task_command.py:389} INFO - Running <TaskInstance: pipeline_Test_3.SFTP_to_S3 manual__2024-10-14T12:10:56.868796+00:00 [running]> on host a84a64e41b62
+[2024-10-14T12:10:58.745+0000] {taskinstance.py:1516} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=pipeline_Test_3
+AIRFLOW_CTX_TASK_ID=SFTP_to_S3
+AIRFLOW_CTX_EXECUTION_DATE=2024-10-14T12:10:56.868796+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=manual__2024-10-14T12:10:56.868796+00:00
+[2024-10-14T12:10:58.746+0000] {sftp_s3.py:187} INFO - Entered sftp_get_file function .....
+[2024-10-14T12:10:58.747+0000] {logging_mixin.py:137} WARNING - /usr/local/lib/python3.9/site-packages/pysftp/__init__.py:61 UserWarning: Failed to load HostKeys from /root/.ssh/known_hosts.  You will need to explicitly load HostKeys (cnopts.hostkeys.load(filename)) or disableHostKey checking (cnopts.hostkeys = None).
+[2024-10-14T12:10:58.747+0000] {sftp_s3.py:210} INFO - Entered func
+[2024-10-14T12:10:58.747+0000] {sftp_s3.py:73} INFO - Executing File pattern check......
+[2024-10-14T12:10:58.797+0000] {transport.py:1944} INFO - Connected (version 2.0, client OpenSSH_8.4p1)
+[2024-10-14T12:10:58.916+0000] {transport.py:1944} INFO - Authentication (password) successful!
+[2024-10-14T12:10:58.916+0000] {logging_mixin.py:137} INFO - Connection successful to SFTP .........
+[2024-10-14T12:10:59.288+0000] {sftp.py:169} INFO - [chan 0] Opened sftp connection (server version 3)
+[2024-10-14T12:10:59.299+0000] {logging_mixin.py:137} INFO - objs: ['sftp_20241010.txt', 'sftp_20241010123456 .txt', 'sftp_20241011.txt', 'sftp_20241011053445.csv', 'sftp_20241011053445.txt', 'sftp_20241012.txt', 'sftp_20241012123030.txt']
+[2024-10-14T12:10:59.299+0000] {sftp.py:169} INFO - [chan 0] sftp session closed.
+[2024-10-14T12:10:59.299+0000] {logging_mixin.py:137} INFO - match_list: ['sftp_20241011053445.txt', 'sftp_20241012123030.txt']
+[2024-10-14T12:10:59.299+0000] {logging_mixin.py:137} INFO - latest file: sftp_20241012123030.txt
+[2024-10-14T12:10:59.299+0000] {sftp_s3.py:121} INFO - Latest file for pattern - sftp_\d{14}\.txt at /sftp_restricted: sftp_20241012123030.txt
+[2024-10-14T12:10:59.337+0000] {transport.py:1944} INFO - Connected (version 2.0, client OpenSSH_8.4p1)
+[2024-10-14T12:10:59.453+0000] {transport.py:1944} INFO - Authentication (password) successful!
+[2024-10-14T12:10:59.453+0000] {sftp_s3.py:223} INFO - Connection successful to SFTP
+[2024-10-14T12:10:59.793+0000] {sftp.py:169} INFO - [chan 0] Opened sftp connection (server version 3)
+[2024-10-14T12:10:59.801+0000] {sftp_s3.py:227} INFO - File sftp_20241012123030.txt downloaded to local path /opt/***/tempdata/sftp_20241012123030.txt
+[2024-10-14T12:10:59.803+0000] {sftp_s3.py:53} INFO - Updating run log for read operation....
+[2024-10-14T12:10:59.803+0000] {sftp_s3.py:57} INFO - Run log updated successfully....
+[2024-10-14T12:10:59.803+0000] {sftp.py:169} INFO - [chan 0] sftp session closed.
+[2024-10-14T12:10:59.804+0000] {logging_mixin.py:137} INFO - lc: /opt/***/tempdata/sftp_20241012123030.txt
+[2024-10-14T12:10:59.804+0000] {sftp_s3.py:18} INFO - Creating Spark session ......
+[2024-10-14T12:11:03.836+0000] {logging_mixin.py:137} INFO - root
+ |-- _c0: string (nullable = true)
+ |-- _c1: string (nullable = true)
+ |-- _c2: string (nullable = true)
+ |-- _c3: string (nullable = true)
+ |-- _c4: string (nullable = true)
+ |-- _c5: string (nullable = true)
+ |-- _c6: string (nullable = true)
+ |-- _c7: string (nullable = true)
+ |-- _c8: string (nullable = true)
+[2024-10-14T12:11:03.838+0000] {logging_mixin.py:137} INFO - None
+[2024-10-14T12:11:12.797+0000] {sftp_s3.py:172} INFO - Moved and Renamed files
+[2024-10-14T12:11:12.804+0000] {sftp_s3.py:53} INFO - Updating run log for write operation....
+[2024-10-14T12:11:12.805+0000] {sftp_s3.py:57} INFO - Run log updated successfully....
+[2024-10-14T12:11:12.805+0000] {sftp_s3.py:309} INFO - File transfer successful to sdevalla-buck with key sftp_file_receiver/sftp_s3_20241014.csv
+[2024-10-14T12:11:12.805+0000] {sftp_s3.py:350} INFO - File transfer Successful
+[2024-10-14T12:11:12.806+0000] {python.py:177} INFO - Done. Returned value was: sftp_file_receiver/sftp_s3_20241014.csv
+[2024-10-14T12:11:12.823+0000] {taskinstance.py:1327} INFO - Marking task as SUCCESS. dag_id=pipeline_Test_3, task_id=SFTP_to_S3, execution_date=20241014T121056, start_date=20241014T121058, end_date=20241014T121112
+[2024-10-14T12:11:12.874+0000] {local_task_job.py:212} INFO - Task exited with return code 0
+[2024-10-14T12:11:12.900+0000] {taskinstance.py:2596} INFO - 1 downstream tasks scheduled from follow-on schedule check
