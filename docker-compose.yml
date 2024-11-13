@@ -1,0 +1,59 @@
+# version: '3'
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  airflow:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - PYTHONPATH=/opt/airflow/scripts 
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./scripts:/opt/airflow/scripts
+      - ./config.py:/opt/airflow/config.py 
+      - ./tests:/opt/airflow/tests
+      - ./tests/results:/opt/airflow/tests/results
+      - ./temp:/opt/airflow/tempdata
+    ports:
+      - "8080:8080"
+
+
+  streamlit:
+    build: .
+    command: streamlit run /opt/airflow/streamlit_app.py
+    volumes:
+      - ./streamlit_app.py:/opt/airflow/streamlit_app.py
+      - ./dags:/opt/airflow/dags  # Mount the same DAGs folder here
+    ports:
+      - "8888:8501"
+    depends_on:
+      - airflow
+
+  sftp:
+    image: atmoz/sftp
+    platform: linux/amd64 
+    volumes:
+      - ./sftp_restricted:/home/sftpuser/sftp_restricted # Mount the local 'dags' folder to the SFTP user's directory
+    ports:
+      - "2222:22"  # Expose port 2222 for SFTP
+    environment:
+      - SFTP_USERS=sftpuser:password:1001  # Define username, password, and user ID
+    depends_on:
+      - airflow
+
+volumes:
+  postgres_data:
