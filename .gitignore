@@ -1,3 +1,5 @@
 /logs
 /tests/results
 /sftp_restricted
+/scripts/secrets.json
+/scripts/__pycache__

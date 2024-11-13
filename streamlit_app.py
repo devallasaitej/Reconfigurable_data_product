@@ -6,15 +6,7 @@ import psycopg2
 import streamlit as st
 from datetime import datetime
 
-# Add the scripts folder to the system path to import required scripts
-sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
-
-import s3_db
-import db_s3
-import s3_s3
-import db_db
-import sftp_s3
-import email_notification
+from scripts import s3_db, db_s3, s3_s3, db_db, sftp_s3, email_notification
 
 # Set page config
 st.set_page_config(
