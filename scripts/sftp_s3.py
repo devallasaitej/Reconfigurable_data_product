@@ -17,17 +17,22 @@ spark = None
 def create_spark_session(s3_conn):
     logging.info("Creating Spark session ......")
     global spark
-    if spark is None:
-      spark = SparkSession.builder \
-        .appName("SFTP_S3") \
-        .config("spark.jars", "/opt/airflow/jars/hadoop-aws-3.3.4.jar,/opt/airflow/jars/aws-java-sdk-bundle-1.11.1026.jar,/opt/airflow/jars/postgresql-42.2.23.jar,/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-        .config("spark.driver.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-        .config("spark.executor.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-        .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-        .config("spark.hadoop.fs.s3a.access.key", s3_conn['s3_access_key']) \
-        .config("spark.hadoop.fs.s3a.secret.key", s3_conn['s3_secret_key']) \
-        .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
-        .getOrCreate()
+    try:
+        if spark is None:
+            spark = SparkSession.builder \
+                .appName("S3_DB") \
+                .config("spark.jars", "/opt/airflow/jars/hadoop-aws-3.3.4.jar,/opt/airflow/jars/aws-java-sdk-bundle-1.11.1026.jar,/opt/airflow/jars/postgresql-42.2.23.jar,/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
+                .config("spark.driver.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
+                .config("spark.executor.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
+                .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
+                .config("spark.hadoop.fs.s3a.access.key", s3_conn['s3_access_key']) \
+                .config("spark.hadoop.fs.s3a.secret.key", s3_conn['s3_secret_key']) \
+                .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
+                .getOrCreate()
+            logging.info("Spark session created successfully.")
+    except Exception as e:
+        logging.error(f"Error creating Spark session: {e}")
+        raise  # Re-raise the exception so that it can be handled by the calling function
       
 # Create a logger
 logger = logging.getLogger()
@@ -64,62 +69,70 @@ def run_logger(dag_id, run_id, service, task_order, log_op, source_access, sourc
       cursor.close()
       conn.close()
 
-
 def sftp_file_pattern_check(sftp_conn, source_sftp_path):
-  """
-  Inputs: Sftp connection details, Sftp Directory
-  Output: Return file with max timestamp of pattern present in Directory
-  """
-  logging.info('Executing File pattern check......')
+    """
+    Inputs: SFTP connection details, SFTP directory path
+    Output: Returns file with max timestamp matching the pattern in the specified directory
+    """
+    logging.info('Executing file pattern check...')
 
-  sftp_parts_1 = source_sftp_path.split('/')
-  prefix = '/'.join(sftp_parts_1[:-1])
-  sftp_file_part = sftp_parts_1[-1]
-  sftp_parts_2 = sftp_file_part.split('_')
-  file_name_pattern = '_'.join(sftp_parts_2[:-1])
-  file_format = source_sftp_path.split('.')[-1]
+    try:
+        # Parse path and file pattern details
+        sftp_parts_1 = source_sftp_path.split('/')
+        prefix = '/'.join(sftp_parts_1[:-1])
+        sftp_file_part = sftp_parts_1[-1]
+        sftp_parts_2 = sftp_file_part.split('_')
+        file_name_pattern = '_'.join(sftp_parts_2[:-1])
+        file_format = source_sftp_path.split('.')[-1]
+        
+        # SFTP connection details
+        hostname = sftp_conn['host']
+        username = sftp_conn['username']
+        password = sftp_conn['password'] 
 
-  # Create pysftp CnOpts object to handle known host keys
-  cnopts = pysftp.CnOpts()
-  cnopts.hostkeys = None  # Disable host key checking
+        # Create pysftp CnOpts object to handle known host keys
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None  # Disable host key checking
 
-  hostname = sftp_conn['host']
-  username = sftp_conn['username']
-  password = sftp_conn['password'] 
+        # Connect to the SFTP server
+        with pysftp.Connection(host=hostname, username=username, password=password, port=22, cnopts=cnopts) as sftp:
+            logging.info("Connection successful to SFTP server.")
+            try:
+                # Change to the specified directory and list files
+                sftp.chdir(prefix)
+                objs = sftp.listdir()
+                logging.info(f"Files in directory {prefix}: {objs}")
+            except Exception as e:
+                logging.error(f"Error accessing directory {prefix} on SFTP server: {e}")
+                return None
 
-  # Connect to the SFTP server
-  with pysftp.Connection(host=hostname, username=username, password=password, port=22, cnopts=cnopts) as sftp:
-    print('Connection successful to SFTP .........')
-    #Change to the specified directory
-    sftp.chdir(prefix)
-    #List files in the directory
-    objs = sftp.listdir()
+        # Pattern matching for files with specified format
+        match_list = []
+        if 'yyyymmddHHMMSS' in source_sftp_path:
+            pattern = rf"{file_name_pattern}_\d{{14}}\.{file_format}"
+        elif 'yyyymmdd' in source_sftp_path:
+            pattern = rf"{file_name_pattern}_\d{{8}}\.{file_format}"
+        else:
+            logging.info(f"No matching timestamp pattern found in {source_sftp_path}")
+            return None
 
-    print('objs:',objs)
+        # Collect files matching the specified pattern
+        for obj in objs:
+            if re.match(pattern, obj):
+                match_list.append(obj)
 
-  match_list = []
-  # listing files with pattern match
-  if 'yyyymmddHHMMSS' in source_sftp_path :
-    pattern = rf"{file_name_pattern}_\d{{14}}\.{file_format}"
-    for obj in objs :
-      if re.match(pattern, obj):
-        match_list.append(obj)
-  elif 'yyyymmdd' in source_sftp_path :
-    pattern = rf"{file_name_pattern}_\d{{8}}\.{file_format}"
-    for obj in objs:
-      if re.match(pattern, obj):
-        match_list.append(obj)
+        # Check for matched files and select the latest one
+        if not match_list:
+            logging.info(f"No files found at {source_sftp_path} matching the pattern.")
+            return None
+        else:
+            latest_file = max(match_list)
+            logging.info(f"Latest file matching pattern '{pattern}' in '{prefix}': {latest_file}")
+            return latest_file
 
-  print('match_list:',match_list)
-  if len(match_list) == 0:
-    logging.info(f"No files found at {source_sftp_path} with input pattern")
-    return None
-  else:
-    # Selecting latest timestamp file for return
-    latest_file = max(match_list)
-    print('latest file:',latest_file)
-    logging.info(f"Latest file for pattern - {pattern} at {prefix}: {latest_file}")
-    return latest_file
+    except Exception as e:
+        logging.error(f"An error occurred in sftp_file_pattern_check: {e}")
+        return None
   
 
 def move_and_rename_file_in_s3(s3_conn, target_s3, new_file_name):
@@ -177,59 +190,80 @@ def move_and_rename_file_in_s3(s3_conn, target_s3, new_file_name):
   
 
 def sftp_get_file(sftp_conn, source_sftp_path, dag_id, run_id, task_order, ssftp_access, ts3_access, target_s3_path):
+    """
+    This function reads a file from an SFTP location and writes a single file to a local path.
+    Inputs: SFTP connection details, source file path
+    Output: Returns local path if successful, None otherwise
+    """
 
-  """
-  This function reads file from SFTP location and writes a single file to DBFS local
-  Inputs: SFTP connection details, source file path
-  Ouput: Returns local DBFS path
-  """
+    logging.info("Entered sftp_get_file function .....")
 
-  logging.info("Entered sftp_get_file function .....")
-  
-  sftp_parts_1 = source_sftp_path.split('/')
-  prefix = '/'.join(sftp_parts_1[:-1])
-  sftp_file_part = sftp_parts_1[-1]
-  sftp_parts_2 = sftp_file_part.split('_')
-  file_name_pattern = '_'.join(sftp_parts_2[:-1])
-  file_format = source_sftp_path.split('.')[-1]
-  
-  hostname = sftp_conn['host']
-  username = sftp_conn['username']
-  password = sftp_conn['password']
-
-  # Create pysftp CnOpts object to handle known host keys
-  cnopts = pysftp.CnOpts()
-  cnopts.hostkeys = None  # Disable host key checking
-    
-  # Determine local path in Docker container (instead of DBFS)
-  local_temp_dir = '/opt/airflow/tempdata/'  # Local directory in the Docker container
-  if not os.path.exists(local_temp_dir):
-        os.makedirs(local_temp_dir)
-    
-  if source_sftp_path.endswith(('.txt', '.csv', '.parquet')):
-        logging.info('Entered func')
-        latest_file = sftp_file_pattern_check(sftp_conn, source_sftp_path)
-        if latest_file:
-            remote_path = f"{prefix}/{latest_file}"
-        else:
-            logging.error("No latest file found")
-            run_logger(dag_id, run_id ,'SFTP-S3',task_order,'insert',ssftp_access ,source_sftp_path , '' , 'read', 0, ts3_access, target_s3_path,'' ,'failed')
-            return None
+    try:
+        # Parse file and connection details
+        sftp_parts_1 = source_sftp_path.split('/')
+        prefix = '/'.join(sftp_parts_1[:-1])
+        sftp_file_part = sftp_parts_1[-1]
+        sftp_parts_2 = sftp_file_part.split('_')
+        file_name_pattern = '_'.join(sftp_parts_2[:-1])
+        file_format = source_sftp_path.split('.')[-1]
         
-        local_path = os.path.join(local_temp_dir, latest_file)
+        hostname = sftp_conn['host']
+        username = sftp_conn['username']
+        password = sftp_conn['password']
+
+        # Setup SFTP connection options
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None  # Disable host key checking
         
-        # Connect to the SFTP server and download the file to the local path
-        with pysftp.Connection(host=hostname, username=username, password=password, cnopts=cnopts) as sftp:
-            logging.info("Connection successful to SFTP")
-            sftp.get(remote_path, local_path)  # Download the file
-            df = pd.read_csv(local_path)
-            rc = len(df)
-            logging.info(f"File {latest_file} downloaded to local path {local_path}")
-            run_logger(dag_id, run_id ,'SFTP-S3',task_order,'insert',ssftp_access ,source_sftp_path , latest_file , 'read', rc, ts3_access, target_s3_path,'' ,'success')
-        print('lc:',local_path)
-        return local_path
-  
-  return None
+        # Local path setup
+        local_temp_dir = '/opt/airflow/tempdata/'
+        if not os.path.exists(local_temp_dir):
+            os.makedirs(local_temp_dir)
+
+        # Check for latest file pattern
+        if source_sftp_path.endswith(('.txt', '.csv', '.parquet')):
+            logging.info('Checking for the latest file in the pattern...')
+            try:
+                latest_file = sftp_file_pattern_check(sftp_conn, source_sftp_path)
+                if latest_file:
+                    remote_path = f"{prefix}/{latest_file}"
+                else:
+                    logging.error("No latest file found matching the pattern.")
+                    run_logger(dag_id, run_id, 'SFTP-S3', task_order, 'insert', ssftp_access, source_sftp_path, '', 'read', 0, ts3_access, target_s3_path, '', 'failed')
+                    return None
+            except Exception as e:
+                logging.error(f"Error in finding the latest file: {e}")
+                return None
+
+            local_path = os.path.join(local_temp_dir, latest_file)
+            
+            # SFTP connection and file download
+            try:
+                with pysftp.Connection(host=hostname, username=username, password=password, cnopts=cnopts) as sftp:
+                    logging.info("Connection successful to SFTP server.")
+                    sftp.get(remote_path, local_path)  # Download the file
+                    logging.info(f"File {latest_file} downloaded to local path {local_path}")
+
+                    # Reading file content to get record count
+                    try:
+                        df = pd.read_csv(local_path)
+                        rc = len(df)
+                        logging.info(f"File contains {rc} records.")
+                        run_logger(dag_id, run_id, 'SFTP-S3', task_order, 'insert', ssftp_access, source_sftp_path, latest_file, 'read', rc, ts3_access, target_s3_path, '', 'success')
+                    except Exception as e:
+                        logging.error(f"Error reading downloaded file for record count: {e}")
+                        run_logger(dag_id, run_id, 'SFTP-S3', task_order, 'insert', ssftp_access, source_sftp_path, latest_file, 'read', 0, ts3_access, target_s3_path, '', 'failed')
+                        return None
+            except Exception as e:
+                logging.error(f"Error during SFTP file download: {e}")
+                run_logger(dag_id, run_id, 'SFTP-S3', task_order, 'insert', ssftp_access, source_sftp_path, '', 'read', 0, ts3_access, target_s3_path, '', 'failed')
+                return None
+            
+            return local_path
+
+    except Exception as e:
+        logging.error(f"An unexpected error occurred in sftp_get_file: {e}")
+        return None
       
 
 def local_s3_transfer(s3_conn,local_path, target_s3_path, dag_id, run_id, task_order, ssftp_access, source_sftp_path, ts3_access):
@@ -326,31 +360,67 @@ def extract_widget_values(input_params, key_prefix):
           return value 
 
 def main_sftp_s3(**input_params):
-  
-  ssftp_access = extract_widget_values(input_params,'source_sftp_access')
-  ts3_access = extract_widget_values(input_params,'target_s3_access')
-  secret_vals = load_json(json_path)
-  sftp_conn = {}
-  sftp_conn['host'] = secret_vals[ssftp_access]['host']
-  sftp_conn['username'] = secret_vals[ssftp_access]['username']
-  sftp_conn['password'] = secret_vals[ssftp_access]['password']
-  s3_conn = {}
-  s3_conn['s3_access_key'] = secret_vals[ts3_access]['s3_access_key']
-  s3_conn['s3_secret_key'] = secret_vals[ts3_access]['s3_secret_key']
-  source_sftp_path = extract_widget_values(input_params,'source_sftp_file_path')
-  target_s3_path = extract_widget_values(input_params,'target_s3_file_path')
-  run_id = extract_widget_values(input_params, 'run_id')
-  dag_id = extract_widget_values(input_params, 'dag_id')
-  task_order = extract_widget_values(input_params, 'task_order') 
-  
-  local_path = sftp_get_file(sftp_conn, source_sftp_path, dag_id, run_id, task_order, ssftp_access, ts3_access, target_s3_path)
-  if local_path :
-    res = local_s3_transfer(s3_conn,local_path, target_s3_path, dag_id, run_id, task_order, ssftp_access, source_sftp_path, ts3_access)
-    if res : 
-      logging.info(f"File transfer Successful")
-      return res
-    else:
-      #run_logger('SFTP-S3','insert','write','',0,target_s3_path,'failed')
-      logging.info("Failed to transfer file from SFTP to S3")
-      return None
+    """
+    Main function for transferring files from SFTP to S3 with exception handling.
+    """
+    try:
+        # Extracting widget values
+        try:
+            ssftp_access = extract_widget_values(input_params, 'source_sftp_access')
+            ts3_access = extract_widget_values(input_params, 'target_s3_access')
+            source_sftp_path = extract_widget_values(input_params, 'source_sftp_file_path')
+            target_s3_path = extract_widget_values(input_params, 'target_s3_file_path')
+            run_id = extract_widget_values(input_params, 'run_id')
+            dag_id = extract_widget_values(input_params, 'dag_id')
+            task_order = extract_widget_values(input_params, 'task_order')
+        except KeyError as e:
+            logging.error(f"Missing required input parameter: {e}")
+            return None
+
+        # Loading secret values
+        try:
+            secret_vals = load_json(json_path)
+            sftp_conn = {
+                'host': secret_vals[ssftp_access]['host'],
+                'username': secret_vals[ssftp_access]['username'],
+                'password': secret_vals[ssftp_access]['password']
+            }
+            s3_conn = {
+                's3_access_key': secret_vals[ts3_access]['s3_access_key'],
+                's3_secret_key': secret_vals[ts3_access]['s3_secret_key']
+            }
+        except KeyError as e:
+            logging.error(f"Missing required key in secrets: {e}")
+            return None
+        except Exception as e:
+            logging.error(f"Error loading secret values: {e}")
+            return None
+
+        # Fetching file from SFTP
+        try:
+            local_path = sftp_get_file(sftp_conn, source_sftp_path, dag_id, run_id, task_order, ssftp_access, ts3_access, target_s3_path)
+            if not local_path:
+                logging.error("Failed to fetch file from SFTP.")
+                return None
+        except Exception as e:
+            logging.error(f"Error during SFTP file retrieval: {e}")
+            return None
+
+        # Transferring file from local to S3
+        try:
+            res = local_s3_transfer(s3_conn, local_path, target_s3_path, dag_id, run_id, task_order, ssftp_access, source_sftp_path, ts3_access)
+            if res:
+                logging.info("File transfer Successful")
+                return res
+            else:
+                logging.error("Failed to transfer file from local to S3")
+                return None
+        except Exception as e:
+            logging.error(f"Error during S3 file transfer: {e}")
+            return None
+
+    except Exception as e:
+        logging.error(f"An unexpected error occurred in main_sftp_s3: {e}")
+        return None
+
   

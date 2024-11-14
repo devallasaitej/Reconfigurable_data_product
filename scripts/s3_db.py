@@ -379,7 +379,7 @@ def main_s3_db(**input_params):
         if inputs:
             result = db_file_write(db_conn, target_db, target_table, inputs[0], load_type)
         else:
-            run_logger(dag_id, run_id, 'S3-DB', task_order, 'insert', s3_access, source_s3_path, f'{inputs[1]}', 'write', f'{result}', db_access, target_table, '', 'success')
+            run_logger(dag_id, run_id, 'S3-DB', task_order, 'insert', s3_access, source_s3_path, f'{inputs[1]}', 'write', f'{result}', db_access, target_table, '', 'failed')
             result = None
 
         if result:
