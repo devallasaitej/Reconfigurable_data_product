@@ -3,70 +3,16 @@ import os
 import json
 import boto3
 import logging
-import psycopg2
-import pyspark
 from datetime import datetime, time
-from pyspark.sql import SparkSession
+
+
+from utility_functions import *
 
 # Create a logger
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-spark = None
-
-# Initialize Spark session
-def create_spark_session(s3_conn):
-    logging.info("Creating Spark session ......")
-    global spark
-    try:
-        if spark is None:
-            spark = SparkSession.builder \
-                .appName("S3_DB") \
-                .config("spark.jars", "/opt/airflow/jars/hadoop-aws-3.3.4.jar,/opt/airflow/jars/aws-java-sdk-bundle-1.11.1026.jar,/opt/airflow/jars/postgresql-42.2.23.jar,/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-                .config("spark.driver.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-                .config("spark.executor.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-                .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-                .config("spark.hadoop.fs.s3a.access.key", s3_conn['s3_access_key']) \
-                .config("spark.hadoop.fs.s3a.secret.key", s3_conn['s3_secret_key']) \
-                .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
-                .getOrCreate()
-            logging.info("Spark session created successfully.")
-    except Exception as e:
-        logging.error(f"Error creating Spark session: {e}")
-        raise  # Re-raise the exception so that it can be handled by the calling function
-
-json_dir = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(json_dir, 'secrets.json')
-
-def run_logger(dag_id, run_id, service, task_order, log_op, source_access, source_path_table, source_file_dml,  opn, rc, target_access, target_path_table, file_name, status):
-  """
-  Inputs: SQL Query
-  Output: Returns True if success
-  """
-  try :
-    conn = psycopg2.connect(dbname="airflow" , user= "airflow", password= "airflow", host= "postgres", port= 5432)
-    cursor = conn.cursor()
-
-    if log_op == 'insert' :
-      query = f"INSERT INTO pipeline_run_log VALUES( '{dag_id}','{run_id}','{service}', '{task_order}','{source_access}','{source_path_table}','{source_file_dml}','{opn}',{rc},'{target_access}','{target_path_table}','{file_name}','{status}',now())"
-    elif log_op == 'update':
-      query = f"UPDATE pipeline_run_log SET status='{status}' where run_id = '{run_id}' and operation='{opn}' "
-
-    logging.info(f"Updating run log for {opn} operation....")
-    # Execute the query and commit
-    cursor.execute(query)
-    conn.commit()
-    logger.info("Run log updated successfully....")
-    return True
-  
-  except (Exception, psycopg2.DatabaseError) as error:
-    logging.info(f"Error: {error}")
-  finally:
-    if conn:
-      cursor.close()
-      conn.close()
-
-def table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table, DML, target_table, load_type, run_id, dag_id, task_order, sdb_access, tdb_access):
+def table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table, DML, target_table, load_type, run_id, dag_id, task_order, sdb_access, tdb_access, spark):
     """
     Reads data from source table using DML if DML is blank SELECT * will be used
     Write data to target table
@@ -74,14 +20,6 @@ def table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table
     Output: record count
     """
     try:
-        # Separate try-except block for creating the Spark session
-        try:
-            create_spark_session()
-            logging.info("Spark session created successfully.")
-        except Exception as e:
-            logging.error(f"Error creating Spark session: {e}")
-            return None
-
         # Reading user input DML
         if DML == '':
             query = f"(SELECT * FROM {source_table}) as query"
@@ -158,18 +96,6 @@ def table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table
         return None
 
 
-def load_json(file_path):
-    with open(file_path, 'r') as f:
-        data = json.load(f)  # Parse the JSON file and convert to a dictionary
-    return data
-
-def extract_widget_values(input_params, key_prefix):
-    """Extracts values from widget_inputs based on the key prefix."""
-    values = {}
-    for key, value in input_params.items():
-        if key.startswith(key_prefix):
-          return value 
-
 def main_db_db(**input_params):
     """
     Main function to perform data read and write operations between databases.
@@ -195,7 +121,7 @@ def main_db_db(**input_params):
         tdb_conn = {}
 
         # Loading connection details from the JSON file
-        secret_vals = load_json(json_path)
+        secret_vals = load_json()
         sdb_conn['db_host'] = secret_vals[sdb_access]['host']
         sdb_conn['db_username'] = secret_vals[sdb_access]['username']
         sdb_conn['db_password'] = secret_vals[sdb_access]['password']
@@ -203,8 +129,14 @@ def main_db_db(**input_params):
         tdb_conn['db_username'] = secret_vals[tdb_access]['username']
         tdb_conn['db_password'] = secret_vals[tdb_access]['password']
 
+        try:
+            spark = db_create_spark_session()
+        except Exception as e:
+            logging.error(f"Failed to create Spark session: {e}")
+            return None
+
         # Calling the function to read and write data
-        status = table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table, DML, target_table, load_type, run_id, dag_id, task_order, sdb_access, tdb_access)
+        status = table_data_read_write(sdb_conn, tdb_conn, source_db, target_db, source_table, DML, target_table, load_type, run_id, dag_id, task_order, sdb_access, tdb_access, spark)
 
         # Checking the status and logging the result
         if status:

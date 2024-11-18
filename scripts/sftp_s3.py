@@ -1,73 +1,18 @@
-import boto3
-import datetime, time
-import pandas as pd
-from datetime import datetime
-import logging
 import re
 import os
 import json
-import psycopg2
+import boto3
 import pysftp
-import pyspark
-from pyspark.sql import SparkSession
+import logging
+import pandas as pd
+from datetime import datetime, time
 
-spark = None
-
-# Initialize Spark session
-def create_spark_session(s3_conn):
-    logging.info("Creating Spark session ......")
-    global spark
-    try:
-        if spark is None:
-            spark = SparkSession.builder \
-                .appName("S3_DB") \
-                .config("spark.jars", "/opt/airflow/jars/hadoop-aws-3.3.4.jar,/opt/airflow/jars/aws-java-sdk-bundle-1.11.1026.jar,/opt/airflow/jars/postgresql-42.2.23.jar,/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-                .config("spark.driver.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-                .config("spark.executor.extraClassPath", "/opt/airflow/jars/postgresql-42.2.23.jar:/opt/airflow/jars/mysql-connector-java-8.0.32.jar") \
-                .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-                .config("spark.hadoop.fs.s3a.access.key", s3_conn['s3_access_key']) \
-                .config("spark.hadoop.fs.s3a.secret.key", s3_conn['s3_secret_key']) \
-                .config("spark.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider") \
-                .getOrCreate()
-            logging.info("Spark session created successfully.")
-    except Exception as e:
-        logging.error(f"Error creating Spark session: {e}")
-        raise  # Re-raise the exception so that it can be handled by the calling function
+from utility_functions import *
       
 # Create a logger
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-json_dir = os.path.dirname(os.path.abspath(__file__))
-json_path = os.path.join(json_dir, 'secrets.json')
-
-def run_logger(dag_id, run_id, service, task_order, log_op, source_access, source_s3_path, file_name,  opn, rc, target_access, target_table, target_file, status):
-  """
-  Inputs: SQL Query
-  Output: Returns True if success
-  """
-  try :
-    conn = psycopg2.connect(dbname="airflow" , user= "airflow", password= "airflow", host= "postgres", port= 5432)
-    cursor = conn.cursor()
-
-    if log_op == 'insert' :
-      query = f"INSERT INTO pipeline_run_log VALUES( '{dag_id}','{run_id}','{service}', '{task_order}','{source_access}','{source_s3_path}','{file_name}','{opn}',{rc},'{target_access}','{target_table}','{target_file}','{status}',now())"
-    elif log_op == 'update':
-      query = f"UPDATE pipeline_run_log SET status='{status}' where run_id = '{run_id}' and operation='{opn}' "
-
-    logging.info(f"Updating run log for {opn} operation....")
-    # Execute the query and commit
-    cursor.execute(query)
-    conn.commit()
-    logger.info("Run log updated successfully....")
-    return True
-  
-  except (Exception, psycopg2.DatabaseError) as error:
-    logging.info(f"Error: {error}")
-  finally:
-    if conn:
-      cursor.close()
-      conn.close()
 
 def sftp_file_pattern_check(sftp_conn, source_sftp_path):
     """
@@ -133,61 +78,6 @@ def sftp_file_pattern_check(sftp_conn, source_sftp_path):
     except Exception as e:
         logging.error(f"An error occurred in sftp_file_pattern_check: {e}")
         return None
-  
-
-def move_and_rename_file_in_s3(s3_conn, target_s3, new_file_name):
-  """
-  This function moves the s3 file & renames it to required file name
-  Inputs: S3 connection details, s3_path, file name
-  Outputs: True
-  """
-
-  access_key = s3_conn['s3_access_key']
-  secret_key = s3_conn['s3_secret_key']
-  
-  s3 = boto3.client('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-
-  s3_parts = target_s3.split('/')
-  bucket_name = s3_parts[2]
-  if target_s3.endswith(('.csv','.txt','.parquet')):
-    prefix = '/'.join(s3_parts[3:-1])
-  else:
-    prefix = '/'.join(s3_parts[3:])
-  
-  if prefix.endswith('/'):
-    folder_prefix = prefix + new_file_name + '/'
-  else :
-    folder_prefix = prefix +'/' +new_file_name+'/'
-
-  fformat = '.'+new_file_name.split('.')[-1]
-  if fformat in ['.csv','.txt']:
-    fformat = '.csv'
-  else:
-    fformat = fformat
-  # List objects in the folder
-  response = s3.list_objects_v2(Bucket=bucket_name, Prefix=folder_prefix)
-  # Retrieve the filenames from the list of objects
-  csv_files = [obj['Key'] for obj in response.get('Contents', []) if obj['Key'].endswith(f'{fformat}')]
-  if csv_files:
-    # Pick the last csv file
-    last_csv_file = csv_files[-1]
-    # Move the file to upper directory
-    if prefix.endswith('/') :
-      key = prefix + new_file_name
-    else:
-      key = prefix + '/' + new_file_name
-    s3.copy_object(Bucket=bucket_name, CopySource=f"{bucket_name}/{last_csv_file}", Key= key)
-    # Delete original directory
-    s3 = boto3.resource('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
-    bucket = s3.Bucket(f'{bucket_name}')
-    for obj in bucket.objects.filter(Prefix= f'{folder_prefix}'):
-      s3.Object(bucket.name,obj.key).delete()
-    logging.info("Moved and Renamed files")
-    return True
-  else :
-    logging.info("Error during moving & renaming files")
-    return None
-  
 
 def sftp_get_file(sftp_conn, source_sftp_path, dag_id, run_id, task_order, ssftp_access, ts3_access, target_s3_path):
     """
@@ -266,15 +156,13 @@ def sftp_get_file(sftp_conn, source_sftp_path, dag_id, run_id, task_order, ssftp
         return None
       
 
-def local_s3_transfer(s3_conn,local_path, target_s3_path, dag_id, run_id, task_order, ssftp_access, source_sftp_path, ts3_access):
+def local_s3_transfer(s3_conn,local_path, target_s3_path, dag_id, run_id, task_order, ssftp_access, source_sftp_path, ts3_access, spark):
 
   """
   This function reads from DBFS local and writes to target S3
   Inputs: DBFS local path, S3 connection details, target path
   Output: Final S3 object key
   """
-
-  create_spark_session(s3_conn)
 
   s3_parts_1 = target_s3_path.split('/')
   bucket_name = s3_parts_1[2]
@@ -283,11 +171,6 @@ def local_s3_transfer(s3_conn,local_path, target_s3_path, dag_id, run_id, task_o
 
   access_key = s3_conn['s3_access_key']
   secret_key = s3_conn['s3_secret_key']
-
-  # Setting Spark configs to access S3
-  spark.conf.set("spark.hadoop.fs.s3a.access.key", access_key)
-  spark.conf.set("spark.hadoop.fs.s3a.secret.key", secret_key)
-  spark._jsc.hadoopConfiguration().set("fs.s3a.endpoint", "s3.amazonaws.com")
 
   # Initialize S3 client with credentials
   s3 = boto3.client('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)  
@@ -338,26 +221,13 @@ def local_s3_transfer(s3_conn,local_path, target_s3_path, dag_id, run_id, task_o
     input_df.coalesce(1).write.format('csv').option('header','False').option("delimiter",delimiter).mode('overwrite').save(file_path)
     res = move_and_rename_file_in_s3(s3_conn, target_s3_path, file_name)
     if res:
-      #run_logger('SFTP-S3','insert','write',file_name,rc, file_path,'success')
       run_logger(dag_id, run_id ,'SFTP-S3',task_order,'insert',ssftp_access , source_sftp_path , latest_file_name , 'write', rc, ts3_access, target_s3_path ,file_name ,'success')
       logging.info(f"File transfer successful to {bucket_name} with key {target_object_key}")
       return target_object_key
   except Exception as e:
-    #run_logger('SFTP-S3','insert','write',file_name,0,target_s3_path,'failed')
     run_logger(dag_id, run_id ,'SFTP-S3',task_order,'insert',ssftp_access , source_sftp_path , latest_file_name , 'write', 0, ts3_access, target_s3_path, '' ,'failed')
     logging.error(f"Unable to write to S3: {e}")
     return None
-  
-def load_json(file_path):
-    with open(file_path, 'r') as f:
-        data = json.load(f)  # Parse the JSON file and convert to a dictionary
-    return data
-
-def extract_widget_values(input_params, key_prefix):
-    """Extracts values from widget_inputs based on the key prefix."""
-    for key, value in input_params.items():
-        if key.startswith(key_prefix):
-          return value 
 
 def main_sftp_s3(**input_params):
     """
@@ -379,7 +249,7 @@ def main_sftp_s3(**input_params):
 
         # Loading secret values
         try:
-            secret_vals = load_json(json_path)
+            secret_vals = load_json()
             sftp_conn = {
                 'host': secret_vals[ssftp_access]['host'],
                 'username': secret_vals[ssftp_access]['username'],
@@ -396,6 +266,12 @@ def main_sftp_s3(**input_params):
             logging.error(f"Error loading secret values: {e}")
             return None
 
+        try:
+            spark = create_spark_session(s3_conn)
+        except Exception as e:
+            logging.error(f"Failed to create Spark session: {e}")
+            return None        
+
         # Fetching file from SFTP
         try:
             local_path = sftp_get_file(sftp_conn, source_sftp_path, dag_id, run_id, task_order, ssftp_access, ts3_access, target_s3_path)
@@ -408,7 +284,7 @@ def main_sftp_s3(**input_params):
 
         # Transferring file from local to S3
         try:
-            res = local_s3_transfer(s3_conn, local_path, target_s3_path, dag_id, run_id, task_order, ssftp_access, source_sftp_path, ts3_access)
+            res = local_s3_transfer(s3_conn, local_path, target_s3_path, dag_id, run_id, task_order, ssftp_access, source_sftp_path, ts3_access, spark)
             if res:
                 logging.info("File transfer Successful")
                 return res
@@ -422,5 +298,11 @@ def main_sftp_s3(**input_params):
     except Exception as e:
         logging.error(f"An unexpected error occurred in main_sftp_s3: {e}")
         return None
-
+    finally:
+        # Ensuring Spark session is stopped even if there is an error
+        try:
+            spark.stop()
+            logging.info("Stopping Spark Session......")
+        except Exception as e:
+            logging.error(f"Error while stopping Spark session: {str(e)}")    
   

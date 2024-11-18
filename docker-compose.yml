@@ -38,6 +38,7 @@ services:
     volumes:
       - ./streamlit_app.py:/opt/airflow/streamlit_app.py
       - ./dags:/opt/airflow/dags  # Mount the same DAGs folder here
+      - ./scripts:/opt/airflow/scripts
     ports:
       - "8888:8501"
     depends_on:

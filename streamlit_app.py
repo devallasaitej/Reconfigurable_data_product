@@ -5,6 +5,7 @@ import json
 import psycopg2
 import streamlit as st
 from datetime import datetime
+sys.path.append(os.path.join(os.path.dirname(__file__), 'scripts'))
 
 from scripts import s3_db, db_s3, s3_s3, db_db, sftp_s3, email_notification
 
@@ -439,7 +440,23 @@ def insert_pipeline_json_to_postgres(json_data):
             notification_recipients TEXT,
             cron_schedule VARCHAR(20),
             services JSONB
-        )
+        );
+        CREATE TABLE IF NOT EXISTS pipeline_run_log (
+            pipeline VARCHAR(255),
+            run_id VARCHAR(255),
+            service VARCHAR(255),
+            task_order VARCHAR(255),
+            source_access VARCHAR(255),
+            source_path_table VARCHAR(255),
+            source_file_dml VARCHAR(255),
+            operation VARCHAR(255),
+            record_count int,
+            target_access VARCHAR(255),
+            target_path_table VARCHAR(255),
+            target_file VARCHAR(255),
+            status VARCHAR(255),
+            timestamp datetime
+        );
         '''
         cursor.execute(create_table_query)
 
