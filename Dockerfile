@@ -42,7 +42,7 @@ RUN chmod +x start_airflow.sh
 # Copy DAGs, scripts, and tests
 COPY dags/ $AIRFLOW_HOME/dags/
 COPY scripts/ $AIRFLOW_HOME/scripts/
-# COPY tests/ $AIRFLOW_HOME/tests/
+COPY tests/ $AIRFLOW_HOME/tests/
 
 # Copy Streamlit app
 COPY streamlit_app.py $AIRFLOW_HOME/
