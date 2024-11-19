@@ -36,7 +36,7 @@ jobs:
     - name: Run tests
       run: |
         mkdir -p tests/results
-        pytest test_scripts/ --maxfail=5 --disable-warnings \
+        pytest tests/ --maxfail=5 --disable-warnings \
           --cov=scripts \
           --cov-report=html:tests/results/cov_html \
           --junitxml=tests/results/test_results.xml \
